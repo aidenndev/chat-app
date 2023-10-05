@@ -1,18 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from "styled-components";
 import Logo from "../assets/logo.svg"
-
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 function Register() {
+    const [values, setValues] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        alert("form");
-    }
+        handleValidation();
+    };
+
+    const toastOptions = {
+        position: "bottom-right",
+        autoClose: 8000,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+    };
+
+    const handleValidation = () => {
+        const { username, email, password, confirmpassword } = values;
+        if (username.length < 3) {
+            toast.error("Username is too short. (Minimum: 4 characters)", toastOptions);
+            return false;
+        } else if (password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/) == false) {
+            toast.error("Password is too short. (Minimum: 8 characters)", toastOptions);
+            return false;
+        } else if (password !== confirmpassword) {
+            toast.error("Passwords do not match!", toastOptions);
+            return false;
+        }
+    };
 
     const handleChange = (event) => {
-
-    }
+        setValues({ ...values, [event.target.name]: event.target.value })
+    };
 
     return (
         <>
@@ -29,7 +59,7 @@ function Register() {
                         onChange={(e) => handleChange(e)}
                     />
                     <input
-                        type="emial"
+                        type="email"
                         placeholder="Email"
                         name="email"
                         onChange={(e) => handleChange(e)}
@@ -50,9 +80,10 @@ function Register() {
                     <span>Already have an account? <Link to="/login">Login</Link></span>
                 </form>
             </FormContainer>
+            <ToastContainer></ToastContainer>
         </>
     )
-}
+};
 
 const FormContainer = styled.div`
     height: 100vh;
